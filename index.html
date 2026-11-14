@@ -185,10 +185,46 @@ body.debug .b,body.debug .hs{outline:1.5px solid red}
 #rotate{display:none;position:fixed;left:0;right:0;width:max-content;margin:0 auto;bottom:12px;z-index:9;background:rgba(20,63,39,.9);color:#fff6dc;padding:8px 16px;border-radius:99px;font-size:13px;border:1px solid var(--gold)}
 @media (orientation:portrait){#rotate.show{display:block}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- Tối ưu điện thoại ---------- */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overscroll-behavior:none;touch-action:manipulation}
+#rot{display:contents}
+/* Điện thoại dọc: xoay giao diện 90° để lấp đầy màn hình (xoay máy ngang thì trở lại bình thường) */
+@media (orientation:portrait) and (max-width:600px){
+  #rot{display:block;position:fixed;top:0;left:0;width:100dvh;height:100dvw;transform-origin:0 0;transform:translateX(100dvw) rotate(90deg);overflow:hidden}
+  .stage{width:min(100dvh,calc(100dvw * var(--ar)));max-height:100dvw}
+  .panel{width:min(94dvh,980px);bottom:max(3dvw,12px)}
+  .mcard{width:min(94dvh,560px);max-height:86dvw}
+  #toast{max-width:90dvh;top:max(14px,env(safe-area-inset-right))}
+  #hback{left:max(12px,env(safe-area-inset-top));top:max(12px,env(safe-area-inset-right))}
+  #hr{right:max(12px,env(safe-area-inset-bottom));top:max(12px,env(safe-area-inset-right))}
+}
+/* Màn hình thấp (điện thoại ngang hoặc đã xoay): thu gọn giao diện */
+@media (max-height:520px),(orientation:portrait) and (max-width:600px){
+  .hbtn{height:34px;font-size:12.5px;padding:0 11px;border-width:1.5px}
+  #fs{width:34px}
+  #hnb .lbl,#hback .lbl{display:none}
+  .panel{padding:10px 14px 10px;border-radius:16px;bottom:8px;border-width:1.5px}
+  .panel .row{margin-bottom:6px!important;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .panel .row::-webkit-scrollbar{display:none}
+  .pill{padding:5px 11px;font-size:12px;white-space:nowrap}
+  .panel h1{font-size:18px;margin-bottom:2px}
+  .panel p{font-size:12px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .cards{gap:10px;margin-top:8px;padding:2px 2px 6px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+  .lcard{flex:0 0 150px;border-radius:12px;scroll-snap-align:start}
+  .lcard img{height:68px}
+  .lcard .t{padding:5px 8px 7px}
+  .lcard b{font-size:13px}.lcard small{font-size:11px}
+  .lcard .ok{font-size:10.5px;padding:1px 7px}
+  .mcard{padding:16px 18px}.mcard h2{font-size:19px}.mcard p,.mcard li{font-size:14px;line-height:1.5}
+  .mbtn{padding:7px 16px}
+}
 </style>
 </head>
 <body>
 <div id="loading">Đang mở sổ tay hành trình…</div>
+<div id="rot">
 <div id="app"></div>
 <div id="hud">
   <a class="hbtn" id="hback" href="#/home" hidden aria-label="Quay lại">←<span class="lbl"> Quay lại</span></a>
@@ -201,6 +237,7 @@ body.debug .b,body.debug .hs{outline:1.5px solid red}
 <div id="modal" role="dialog" aria-modal="true"></div>
 <div id="toast" role="status"></div>
 <div id="rotate">Xoay ngang màn hình để trải nghiệm tốt nhất</div>
+</div>
 
 <script>
 /* =====================================================================
@@ -420,7 +457,7 @@ function mountFind(){
   };
   fd.onclick=e=>{
     if(P.found.size===3)return;
-    const r=fd.getBoundingClientRect(),X=(e.clientX-r.left)/r.width*100,Y=(e.clientY-r.top)/r.height*100;
+    const r=fd.getBoundingClientRect(),rt=matchMedia('(orientation:portrait) and (max-width:600px)').matches,X=rt?(e.clientY-r.top)/r.height*100:(e.clientX-r.left)/r.width*100,Y=rt?(r.right-e.clientX)/r.width*100:(e.clientY-r.top)/r.height*100;
     const hit=L.find.findIndex((t,i)=>!P.found.has(i)&&(((X-t.x)*img.w/100)**2+((Y-t.y)*img.h/100)**2)<=(t.r*img.w/100)**2);
     if(hit>=0){
       const t=L.find[hit];P.found.add(hit);
