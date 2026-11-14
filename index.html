@@ -182,8 +182,9 @@ body.debug .b,body.debug .hs{outline:1.5px solid red}
 #toast.show{opacity:1;transform:none}
 #loading{position:fixed;inset:0;display:grid;place-items:center;background:#0f2a1c;color:#fff6dc;z-index:40;font-weight:700;letter-spacing:.05em;transition:opacity .5s}
 #loading.done{opacity:0;pointer-events:none}
-#rotate{display:none;position:fixed;left:0;right:0;width:max-content;margin:0 auto;bottom:12px;z-index:9;background:rgba(20,63,39,.9);color:#fff6dc;padding:8px 16px;border-radius:99px;font-size:13px;border:1px solid var(--gold)}
+#rotate{display:none;position:fixed;left:0;right:0;width:max-content;margin:0 auto;top:12px;z-index:9;pointer-events:none;transition:opacity .6s;background:rgba(20,63,39,.9);color:#fff6dc;padding:8px 16px;border-radius:99px;font-size:13px;border:1px solid var(--gold)}
 @media (orientation:portrait){#rotate.show{display:block}}
+#rotate.hide{opacity:0}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* ---------- Tối ưu điện thoại ---------- */
@@ -658,7 +659,7 @@ function render(){
     if(r.name==='journey')save.last=r.id;
     requestAnimationFrame(()=>$app.classList.remove('out'));
     $loading.classList.add('done');
-    $rotate.classList.toggle('show',r.name!=='journey');
+    if(!window.__rotHinted){window.__rotHinted=1;$rotate.classList.add('show');setTimeout(()=>$rotate.classList.add('hide'),3500)}
     if(r.name==='home')preload(['ui-game','ui-notebook','cover-vat-the','cover-phi-vat-the','cover-le-hoi']);
   });
 }
